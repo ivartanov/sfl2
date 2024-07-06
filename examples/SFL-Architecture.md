@@ -1,6 +1,6 @@
 # SFL Architecture Explained
 
-The folder provides examples of using SFL in practice. 
+The folder provides examples of using SFL in practice, but some aspects may remain unclear.
 
 Now it’s time to delve a bit into the topic and find out what is under the SFL’s hood.
 
@@ -37,7 +37,7 @@ All supplementary service functions are implemented by `CServiceRoot` class. The
 
 ## Class CServiceBaseT<>
 
-`CServiceBaseT<>` class defines the service part of the framework structure and implements one vital part of service code – `ServiceMain` member function.
+`CServiceBaseT<>` class defines the service part of the framework structure and implements one vital part of service code – `ServiceMain` member function. (See MSDN on [ServiceMain](https://learn.microsoft.com/en-us/windows/win32/services/service-servicemain-function))
 
 The only additional task performed by `CServiceBaseT<>` class is registration of proper `_Handler(Ex)` function according to a service style. 
 
@@ -48,7 +48,7 @@ Also `CServiceBaseT<>` class contains two void member functions `InitInstance` a
 
 The `GetServiceContext` is called only in case of `SFL_SERVICESTYLE_NT5` style, providing a context to a `HandlerEx` function. You may consider a context like some structure or interface that supplies all data required for proper service functioning. Though the service class itself may be used as service context structure, `GetServiceContext` provides additional level of flexibility available to developer. 
 
-Please, refer to MSDN `HandlerEx` article regarding service context additional details.
+Please, refer to MSDN [HandlerEx](https://learn.microsoft.com/en-us/windows/desktop/api/winsvc/nc-winsvc-lphandler_function_ex) article regarding service context additional details.
 
 > [!NOTE]
 > Both these member functions can be overridden in your service class, if this is required.
@@ -80,7 +80,7 @@ SFL_HANDLE_CONTROL_EX(code, handler)
 SFL_HANDLE_CONTROL_RANGE_EX(codeMin, codeMax, handler)
 ```
 
-It’s important to remember that non-extended control handler macros/prototypes are usable within `SFL_BEGIN_CONTROL_MAP_EX` control map as well as their extended versions (see MidSvc demo project)
+It’s important to remember that non-extended control handler macros/prototypes are usable within `SFL_BEGIN_CONTROL_MAP_EX` control map as well as their extended versions (see [MidSvc](MidSvc/) demo project)
 
 As it was mentioned above, your class may implement `GetServiceContext` and `InitInstance` functions as well. Remember, `InitInstance` call must return true to let your service start running.
 
@@ -103,7 +103,7 @@ The purpose of proxy class is to provide static member functions `_ServiceMain` 
 
 ## Class CServiceAppT<>
 
-`CServiceAppT<>` class defines the application part of the framework structure and implements a vital part of application code – `Main` member function that constructs and initializes `SERVICE_TABLE_ENTRY` array that finally gets passed to Run member function where `StartServiceCtrlDispatcher` Win32 API entry is called. Here is the point where your application turns to a service (at last!) – this call results in invoking SCM functionality, when the static `CServiceProxy<>::_ServiceMain` member function gets called in a new thread specially created by SCM, while the main thread remains suspended until your service stops. As you may suppose, this call eventually ends in calling `ServiceMain` member function of your service class.
+`CServiceAppT<>` class defines the application part of the framework structure and implements a vital part of application code – `Main` member function that constructs and initializes `SERVICE_TABLE_ENTRY` array that finally gets passed to Run member function where [StartServiceCtrlDispatcher](https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-startservicectrldispatchera) Win32 API entry is called. Here is the point where your application turns to a service (at last!) – this call results in invoking SCM functionality, when the static `CServiceProxy<>::_ServiceMain` member function gets called in a new thread specially created by SCM, while the main thread remains suspended until your service stops. As you may suppose, this call eventually ends in calling `ServiceMain` member function of your service class.
 
 ## Your application class
 
