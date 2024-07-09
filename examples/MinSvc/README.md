@@ -108,6 +108,7 @@ Test the registration success by:
 
 ```
 > sc query "My Service"
+
 SERVICE_NAME: My Service
         TYPE               : 10  WIN32_OWN_PROCESS
         STATE              : 1  STOPPED
@@ -124,6 +125,7 @@ The newly created service must be in `SERVICE_STOPPED` state.
 
 ```
 > sc start "My Service"
+
 SERVICE_NAME: My Service
         TYPE               : 10  WIN32_OWN_PROCESS
         STATE              : 2  START_PENDING
@@ -136,10 +138,14 @@ SERVICE_NAME: My Service
         FLAGS              :
 ```
 
-Test the start success by:
+> [!NOTE]
+> Please note that 'start pending' status is immediately returned. For real service being started this is normal to take some time until service functions get ready to serve routine tasks. However, in our case the dummy service does not start any long.
+
+Test the ultimate start success by:
 
 ```
 > sc query "My Service"
+
 SERVICE_NAME: My Service
         TYPE               : 10  WIN32_OWN_PROCESS
         STATE              : 4  RUNNING
@@ -156,12 +162,30 @@ The newly created service must be in `SERVICE_RUNNING` state.
 
 ```
 > sc pause "My Service"
+
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 7  PAUSED
+                                (STOPPABLE,PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
 Test the pausing success by:
 
 ```
 > sc query "My Service"
+
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 7  PAUSED
+                                (STOPPABLE,PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
 The service must be in `SERVICE_PAUSED` state.
@@ -170,12 +194,30 @@ The service must be in `SERVICE_PAUSED` state.
 
 ```
 > sc continue "My Service"
+
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 4  RUNNING
+                                (STOPPABLE,PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
 Test the continuation success by:
 
 ```
 > sc query "My Service"
+
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 4  RUNNING
+                                (STOPPABLE,PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
 The service must be in `SERVICE_RUNNING` state.
@@ -184,12 +226,33 @@ The service must be in `SERVICE_RUNNING` state.
 
 ```
 > sc stop "My Service"
+
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 1  STOPPED
+                                (NOT_STOPPABLE,NOT_PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
-Test the stopping success by:
+> [!NOTE]
+> Same to starting, stopping service may take some time in real applications. So here you may have 'stop pending' status alright. However, our simplistic app reaches stopped status instantly.
+
+Test the ultimate stopping success by:
 
 ```
 > sc query "My Service"
+
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 1  STOPPED
+                                (NOT_STOPPABLE,NOT_PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
 The service must be in `SERVICE_STOPPED` state.
