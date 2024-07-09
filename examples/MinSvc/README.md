@@ -98,6 +98,7 @@ SC.EXE application from Windows standard tools will be used for manipulations wi
 
 ```
 > sc create "My Service" binPath= <full path to MinSvc.exe>
+[SC] CreateService SUCCESS
 ```
 
 > [!WARNING]
@@ -107,6 +108,14 @@ Test the registration success by:
 
 ```
 > sc query "My Service"
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 1  STOPPED
+                                (NOT_STOPPABLE,NOT_PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 1077       (0x435)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
 The newly created service must be in `SERVICE_STOPPED` state.
@@ -115,12 +124,30 @@ The newly created service must be in `SERVICE_STOPPED` state.
 
 ```
 > sc start "My Service"
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 2  START_PENDING
+                                (NOT_STOPPABLE,NOT_PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x7d0
+        PID                : 2752
+        FLAGS              :
 ```
 
 Test the start success by:
 
 ```
 > sc query "My Service"
+SERVICE_NAME: My Service
+        TYPE               : 10  WIN32_OWN_PROCESS
+        STATE              : 4  RUNNING
+                                (STOPPABLE,PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
 ```
 
 The newly created service must be in `SERVICE_RUNNING` state.
@@ -171,12 +198,16 @@ The service must be in `SERVICE_STOPPED` state.
 
 ```
 > sc delete "My Service"
+[SC] DeleteService SUCCESS
 ```
 
 Test the deletion success by:
 
 ```
 > sc query "My Service"
+[SC] EnumQueryServicesStatus:OpenService FAILED 1060:
+
+The specified service does not exist as an installed service.
 ```
 
 The service must not exist to the moment.
