@@ -350,21 +350,21 @@ namespace SFL {
 		template <> SERVICE_STATUS_HANDLE RegisterHandler<XNT5>(XNT5*)
 		{
 			TService* pThis = static_cast<TService*>(this);
-			SFLASSERT( pThis || "CServiceBaseClass::ServiceMain" );
+			SFLASSERT( pThis || !"CServiceBaseClass::RegisterHandler<XNT5>" );
 			return ::RegisterServiceCtrlHandlerEx( GetServiceName(), m_pfnHandlerEx, pThis->GetServiceContext() );
 		}
 
         void ServiceMain( DWORD dwArgc, LPTSTR* lpszArgv )
         {
             TService* pThis = static_cast<TService*>(this);
-            SFLASSERT( pThis || "CServiceBaseClass::ServiceMain" );
+            SFLASSERT( pThis || !"CServiceBaseClass::ServiceMain" );
 
             BOOL  bRes;
             DWORD dwSpecific = 0;
 
             SetControlsAccepted( t_dwControlsAccepted );
 
-			m_status.SetHandle( pThis->RegisterHandler( (X<TService::serviceStyle>*)NULL ) );
+            m_status.SetHandle( pThis->RegisterHandler( (X<TService::serviceStyle>*)NULL ) );
             SFLASSERT( m_status.GetHandle() || !"SFL: Handler registration failed" );
 
             SetServiceStatus( SERVICE_START_PENDING );
