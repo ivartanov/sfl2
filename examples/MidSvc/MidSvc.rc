@@ -1,0 +1,12 @@
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_DEVICE_SERVICE      "MidSvc_Device"
+END
+

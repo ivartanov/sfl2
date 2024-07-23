@@ -10,6 +10,8 @@ Folder [examples](examples/) includes minimalistic demo application:
 
 - [MinSvc](examples/MinSvc/) - a dummy Windows service application that does nothing but service stuff. Being properly registered it is able to start, pause, continue and stop as any other Windows service. In fact, the service source code may be used as a basic template for your service app.
 
+- [MidSvc](examples/MidSvc/) - a service application capable of receiving hardware events from the system and looging those to file.
+
 - [SFL-Architecure](examples/SFL-Architecture.md) document gives you some design details about the library internals and the logic it implements.
 
 ## History
