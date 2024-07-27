@@ -130,3 +130,7 @@ In the first case your service class name and resource id are used to construct 
 
 In the second case unique service id and service name string are provided explicitly and independently to each other. 
 
+# Application life cycle
+
+![](images/appLifeCycle.svg)
+

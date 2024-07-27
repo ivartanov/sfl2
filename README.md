@@ -12,7 +12,7 @@ Folder [examples](examples/) includes minimalistic demo applications:
 
 - [MidSvc](examples/MidSvc/) - a service application capable of receiving hardware events from the system and logging those to file.
 
-[SFL-Architecure](examples/SFL-Architecture.md) document gives you some design details about the library internals and the logic it implements.
+[SFL-Architecure](doc/SFL-Architecture.md) document gives you some design details about the library internals and the logic it implements.
 
 ## History
 
