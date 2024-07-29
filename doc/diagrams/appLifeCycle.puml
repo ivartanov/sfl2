@@ -2,49 +2,68 @@
 
 hide empty description
 [*] --> _tmain : _tmain(argc, argv)
-_tmain --> PreMain : this->PreMain(argc, argv)
-PreMain -> _tmain : FALSE
-PreMain : (void by default, just returning TRUE)\n
-PreMain : here you can analyze
-PreMain : command line arguments
-PreMain : and decide whether you run
-PreMain : user mode or service mode\n
-PreMain : (return FALSE to prevent
-PreMain : running service mode)
-PreMain --> Main : this->Main(argc, argv)
 
-Main --> Run : this->Run(pTable)
-Main : here the table of services
-Main : is built from the service map 
-Main : to be passed to Run()
+state _tmain {
 
-Run -> InitApp : this->InitApp()
-InitApp : (void by default)\n
-InitApp : here you init application,
-InitApp : but not your services
+  [*] --> PreMain : this->PreMain(argc, argv)
+  PreMain -> [*] : FALSE
+  state PreMain #gold
+  PreMain : (void by default, just returning TRUE)\n
+  PreMain : here you can analyze
+  PreMain : command line arguments
+  PreMain : and decide whether you run
+  PreMain : user mode or service mode\n
+  PreMain : (return FALSE to prevent
+  PreMain : running service mode)
+  PreMain --> Main : this->Main(argc, argv)
 
-InitApp --> Run : FALSE
-InitApp --> StartServices : TRUE
-StartServices : makes a call of Win32 API
-StartServices : StartServiceCtrlDispatcher;\n
-StartServices : this is where SCM starts
-StartServices : bringing your services up\n
-StartServices : the call remains blocked
-StartServices : untill all the services got shut
+  state Main {
 
-StartServices --> ExitApp : this->ExitApp()
-ExitApp : (void by default)\n
-ExitApp : here you release any resources
-ExitApp : allocated at InitApp
-ExitApp -> Run : return
-Run -> Main : return
-Main --> PostMain : return
+    [*] --> Run : this->Run(pTable)
 
-PostMain -> _tmain : return
-PostMain : (void by default)\n
-PostMain : here you deallocate anything
-PostMain : you allocated at PreMain, or
-PostMain : do any other finalization stuff
+    state Run {
+
+      [*] --> InitApp : this->InitApp()
+      InitApp : (void by default)\n
+      InitApp : here you init application,
+      InitApp : but not your services
+
+      InitApp --> [*] : FALSE
+      state InitApp #gold
+      InitApp --> StartServices : TRUE
+      StartServices : makes a call of Win32 API
+      StartServices : StartServiceCtrlDispatcher;\n
+      StartServices : this is where SCM starts
+      StartServices : bringing your services up\n
+      StartServices : the call remains blocked
+      StartServices : untill all the services got shut
+
+      StartServices --> ExitApp : this->ExitApp()
+      state ExitApp #gold
+      ExitApp : (void by default)\n
+      ExitApp : here you release any resources
+      ExitApp : allocated at InitApp
+
+      ExitApp --> [*] : return
+  }
+
+  Run --> [*] : return
+  Main : here the table of services
+  Main : is built from the service map
+  Main : to be passed to Run()
+
+  }
+
+  Main --> PostMain : this->PostMain()
+
+  PostMain --> [*] : return
+  state PostMain #gold
+  PostMain : (void by default)\n
+  PostMain : here you deallocate anything
+  PostMain : you allocated at PreMain, or
+  PostMain : do any other finalization stuff
+
+}
 
 _tmain --> [*]
 

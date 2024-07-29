@@ -134,9 +134,15 @@ In the second case unique service id and service name string are provided explic
 
 ![](images/appLifeCycle.svg)
 
+> [!TIP]
+> Golden boxes denote overridable methods.
+
 # Service life cycle
 
 > [!NOTE]
 > A bit simplified state diagram not showing pending states is below. Pleas refer to MSDN for full details about possible service states and transitions among those.
 
 ![](images/svcLifeCycle.svg)
+
+> [!TIP]
+> Golden boxes denote overridable methods and control handlers.

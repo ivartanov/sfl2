@@ -2,13 +2,21 @@
 
 hide empty description
 
-[*] --> SCM : service dispatcher started
-SCM --> ServiceMain : ServiceMain(argc, argv)
-ServiceMain -> ServiceMain : SetControlsAccepted(dwControls)
-ServiceMain --> SERVICE_START_PENDING
-SERVICE_START_PENDING --> InitInstance: this->InitInstance*(arc, argv)
-InitInstance --> ServiceMain : return
-InitInstance --> SERVICE_STOPPED : FALSE
+[*] --> ServiceMain : ServiceMain(argc, argv)
+
+note on link
+  called by SCM on service
+  dispatching started
+end note
+
+state ServiceMain {
+
+  [*] --> SetControls : SetControlsAccepted(dwControlsAccepted)
+  SetControls --> SERVICE_START_PENDING
+  SERVICE_START_PENDING --> InitInstance: this->InitInstance*(arc, argv)
+  state InitInstance #gold
+}
+
 InitInstance --> SERVICE_RUNNING : TRUE
 InitInstance : (void by default, just returning TRUE)\n
 InitInstance : this is where command line arguments are
@@ -16,11 +24,15 @@ InitInstance : given last chance to be analyzed and used\n
 InitInstance : if initialization fails, the service
 InitInstance : gets stopped immediately
 
+InitInstance --> SERVICE_STOPPED : FALSE
+SERVICE_STOPPED --> [*]
 SERVICE_RUNNING -> SERVICE_STOPPED : Stop
-SERVICE_STOPPED -> SERVICE_RUNNING : Start
 SERVICE_RUNNING --> SERVICE_PAUSED : Pause
 SERVICE_PAUSED --> SERVICE_RUNNING : Continue
 SERVICE_PAUSED -> SERVICE_STOPPED : Stop
-SERVICE_STOPPED --> [*] : service dispatcher stopped
+
+state SERVICE_RUNNING #gold
+state SERVICE_PAUSED  #gold
+state SERVICE_STOPPED #gold
 
 @enduml
