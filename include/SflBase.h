@@ -44,98 +44,98 @@
 #endif
 
 namespace SFL {
-	class CServiceRoot;
+    class CServiceRoot;
 
-	enum
-	{
-		SFL_SERVICESTYLE_NT4 = 0,
-		SFL_SERVICESTYLE_NT5
-	};
-	template <int> class X;	
-	typedef X<SFL_SERVICESTYLE_NT4> XNT4; 
-	typedef X<SFL_SERVICESTYLE_NT5> XNT5;
+    enum
+    {
+        SFL_SERVICESTYLE_NT4 = 0,
+        SFL_SERVICESTYLE_NT5
+    };
+    template <int> class X;
+    typedef X<SFL_SERVICESTYLE_NT4> XNT4;
+    typedef X<SFL_SERVICESTYLE_NT5> XNT5;
 
-	/////////////////////////////////////////////////////////////////////////////
-	//
-	//  structure CServiceInfo
-	//
-	//  Version 2.0 (Jul 15 2007)
-	//
-	//
-	/////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    //  structure CServiceInfo
+    //
+    //  Version 2.0 (Jul 15 2007)
+    //
+    //
+    /////////////////////////////////////////////////////////////////////////////
 
-	struct CServiceInfo
-	{
-		LPCTSTR                 m_pszServiceName;
-		LPSERVICE_MAIN_FUNCTION m_pfnServiceMain;
-		DWORD                   m_style;
-	};
+    struct CServiceInfo
+    {
+        LPCTSTR                 m_pszServiceName;
+        LPSERVICE_MAIN_FUNCTION m_pfnServiceMain;
+        DWORD                   m_style;
+    };
 
-	/////////////////////////////////////////////////////////////////////////////
-	//
-	//  class CServiceProxyT<TService,t_szServiceName>
-	//
-	//  Version 2.0 (Sep 28 2007)
-	//
-	//
-	/////////////////////////////////////////////////////////////////////////////
-	template<class TService, DWORD t_serviceId>
-	class CServiceProxyT: protected TService
-	{
-		typedef CServiceProxyT<TService, t_serviceId> CServiceProxyClass;
-		template <class T> void SetHandler(T*);
-		template <> void SetHandler<XNT4>(XNT4*) { m_pfnHandler   = _Handler;   }
-		template <> void SetHandler<XNT5>(XNT5*) { m_pfnHandlerEx = _HandlerEx; }
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    //  class CServiceProxyT<TService,t_szServiceName>
+    //
+    //  Version 2.0 (Sep 28 2007)
+    //
+    //
+    /////////////////////////////////////////////////////////////////////////////
+    template<class TService, DWORD t_serviceId>
+    class CServiceProxyT: protected TService
+    {
+        typedef CServiceProxyT<TService, t_serviceId> CServiceProxyClass;
+        template <class T> void SetHandler(T*);
+        template <> void SetHandler<XNT4>(XNT4*) { m_pfnHandler   = _Handler;   }
+        template <> void SetHandler<XNT5>(XNT5*) { m_pfnHandlerEx = _HandlerEx; }
 
-	protected:
-		CServiceProxyT()
-		{
-			m_pThis = this;			
-			SetHandler((X<serviceStyle>*)NULL);
-		}
+    protected:
+        CServiceProxyT()
+        {
+            m_pThis = this;
+            SetHandler((X<serviceStyle>*)NULL);
+        }
 
-	public:
-		static CServiceRoot* Construct(TService* pDummy = NULL)
-		{
-			static TCHAR szServiceName[256] = {0};
-			BOOL res = ::LoadString(::GetModuleHandle(NULL), t_serviceId, szServiceName, ARRAYSIZE(szServiceName));
-			SFLASSERT(res);
-			return Construct2(pDummy, szServiceName);
-		}
+    public:
+        static CServiceRoot* Construct(TService* pDummy = NULL)
+        {
+            static TCHAR szServiceName[256] = {0};
+            BOOL res = ::LoadString(::GetModuleHandle(NULL), t_serviceId, szServiceName, ARRAYSIZE(szServiceName));
+            SFLASSERT(res);
+            return Construct2(pDummy, szServiceName);
+        }
 
-		static CServiceRoot* Construct2(TService* pDummy = NULL, LPCTSTR pszName = NULL)
-		{
-			pDummy; // to prevent warning C4100
-			static CServiceProxyClass theService;
-			static CServiceInfo si = { pszName, theService._ServiceMain, theService.serviceStyle };
-			theService.m_pServiceInfo = &si;
-			return static_cast<CServiceRoot*>(&theService);
-		}
+        static CServiceRoot* Construct2(TService* pDummy = NULL, LPCTSTR pszName = NULL)
+        {
+            pDummy; // to prevent warning C4100
+            static CServiceProxyClass theService;
+            static CServiceInfo si = { pszName, theService._ServiceMain, theService.serviceStyle };
+            theService.m_pServiceInfo = &si;
+            return static_cast<CServiceRoot*>(&theService);
+        }
 
-	protected:
-		static CServiceProxyClass* m_pThis;
+    protected:
+        static CServiceProxyClass* m_pThis;
 
-		static void WINAPI _ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
-		{
-			SFLASSERT(m_pThis || !"SFLServiceProxyT<TService>::_ServiceMain");
-			m_pThis->ServiceMain(dwArgc, lpszArgv);
-		}
+        static void WINAPI _ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
+        {
+            SFLASSERT(m_pThis || !"SFLServiceProxyT<TService>::_ServiceMain");
+            m_pThis->ServiceMain(dwArgc, lpszArgv);
+        }
 
-		static void WINAPI _Handler(DWORD dwCtrl)
-		{
-			SFLASSERT(m_pThis || !"SFLServiceProxyT<TService>::_Handler");
-			m_pThis->Handler(dwCtrl);
-		}
+        static void WINAPI _Handler(DWORD dwCtrl)
+        {
+            SFLASSERT(m_pThis || !"SFLServiceProxyT<TService>::_Handler");
+            m_pThis->Handler(dwCtrl);
+        }
 
-		static DWORD WINAPI _HandlerEx(DWORD dwCtrl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext)
-		{
-			SFLASSERT(m_pThis || !"SFLServiceProxyT<TService>::_HandlerEx");
-			return m_pThis->HandlerEx(dwCtrl, dwEventType, lpEventData, lpContext);
-		}
-	};
+        static DWORD WINAPI _HandlerEx(DWORD dwCtrl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext)
+        {
+            SFLASSERT(m_pThis || !"SFLServiceProxyT<TService>::_HandlerEx");
+            return m_pThis->HandlerEx(dwCtrl, dwEventType, lpEventData, lpContext);
+        }
+    };
 
-	template<class TService, DWORD t_szServiceId>
-		CServiceProxyT<TService, t_szServiceId>* CServiceProxyT<TService, t_szServiceId>::m_pThis = NULL;
+    template<class TService, DWORD t_szServiceId>
+        CServiceProxyT<TService, t_szServiceId>* CServiceProxyT<TService, t_szServiceId>::m_pThis = NULL;
 
 
     /////////////////////////////////////////////////////////////////////////////
@@ -153,10 +153,10 @@ namespace SFL {
         SERVICE_STATUS_HANDLE m_handle;
 
     public:
-        CServiceStatusObject(): m_handle(NULL) 
-		{
-			ZeroMemory(static_cast<LPSERVICE_STATUS>(this), sizeof(SERVICE_STATUS));
-		}
+        CServiceStatusObject(): m_handle(NULL)
+        {
+            ZeroMemory(static_cast<LPSERVICE_STATUS>(this), sizeof(SERVICE_STATUS));
+        }
 
         operator LPSERVICE_STATUS()
         {
@@ -196,9 +196,9 @@ namespace SFL {
     protected:
         CServiceInfo*  m_pServiceInfo;
         CServiceStatusObject m_status;
-        
-	protected:
-		CServiceRoot(): m_pServiceInfo(NULL) {}
+
+    protected:
+        CServiceRoot(): m_pServiceInfo(NULL) {}
 
     private:
         CServiceRoot( const CServiceRoot& ) {}
@@ -217,20 +217,20 @@ namespace SFL {
             return m_pServiceInfo->m_pszServiceName;
         }
 
-		LPSERVICE_MAIN_FUNCTION GetServiceMain() const
-		{
-			return m_pServiceInfo->m_pfnServiceMain;
-		}
+        LPSERVICE_MAIN_FUNCTION GetServiceMain() const
+        {
+            return m_pServiceInfo->m_pfnServiceMain;
+        }
 
-		DWORD GetServiceStyle() const
-		{
-			return m_pServiceInfo->m_style;
-		}
+        DWORD GetServiceStyle() const
+        {
+            return m_pServiceInfo->m_style;
+        }
 
         void SetServiceType( DWORD dwType )
         {
-			if(0 == m_status.dwServiceType)  // can be set only once
-				m_status.dwServiceType = dwType;
+            if(0 == m_status.dwServiceType)  // can be set only once
+                m_status.dwServiceType = dwType;
         }
 
         DWORD GetControlsAccepted() const
@@ -238,7 +238,7 @@ namespace SFL {
             return m_status.dwControlsAccepted;
         }
 
-	protected:  
+    protected:
         void SetControlsAccepted( DWORD dwAccept )
         {
             m_status.dwControlsAccepted = dwAccept;
@@ -285,7 +285,7 @@ namespace SFL {
             if( ERROR_SUCCESS == dwSpecificExitCode )
                 return SetServiceStatus( dwState );
 
-            m_status.dwServiceSpecificExitCode = dwSpecificExitCode;        
+            m_status.dwServiceSpecificExitCode = dwSpecificExitCode;
             return SetServiceStatus( dwState, ERROR_SERVICE_SPECIFIC_ERROR );
         }
 
@@ -335,24 +335,24 @@ namespace SFL {
 
         CServiceBaseT(){}
 
-		union
-		{
-			LPHANDLER_FUNCTION    m_pfnHandler;
-			LPHANDLER_FUNCTION_EX m_pfnHandlerEx;
-		};
+        union
+        {
+            LPHANDLER_FUNCTION    m_pfnHandler;
+            LPHANDLER_FUNCTION_EX m_pfnHandlerEx;
+        };
 
-		template <class T> SERVICE_STATUS_HANDLE RegisterHandler(T*);
-		template <> SERVICE_STATUS_HANDLE RegisterHandler<XNT4>(XNT4*)
-		{
-			return ::RegisterServiceCtrlHandler( GetServiceName(), m_pfnHandler );
-		}
+        template <class T> SERVICE_STATUS_HANDLE RegisterHandler(T*);
+        template <> SERVICE_STATUS_HANDLE RegisterHandler<XNT4>(XNT4*)
+        {
+            return ::RegisterServiceCtrlHandler( GetServiceName(), m_pfnHandler );
+        }
 
-		template <> SERVICE_STATUS_HANDLE RegisterHandler<XNT5>(XNT5*)
-		{
-			TService* pThis = static_cast<TService*>(this);
-			SFLASSERT( pThis || !"CServiceBaseClass::RegisterHandler<XNT5>" );
-			return ::RegisterServiceCtrlHandlerEx( GetServiceName(), m_pfnHandlerEx, pThis->GetServiceContext() );
-		}
+        template <> SERVICE_STATUS_HANDLE RegisterHandler<XNT5>(XNT5*)
+        {
+            TService* pThis = static_cast<TService*>(this);
+            SFLASSERT( pThis || !"CServiceBaseClass::RegisterHandler<XNT5>" );
+            return ::RegisterServiceCtrlHandlerEx( GetServiceName(), m_pfnHandlerEx, pThis->GetServiceContext() );
+        }
 
         void ServiceMain( DWORD dwArgc, LPTSTR* lpszArgv )
         {
@@ -387,10 +387,10 @@ namespace SFL {
             return TRUE;
         }
 
-		LPVOID GetServiceContext() 
-		{ 
-			return NULL; 
-		}
+        LPVOID GetServiceContext()
+        {
+            return NULL;
+        }
     };
 
 
@@ -481,7 +481,7 @@ namespace SFL {
                 {
                     SFLASSERT( pMap[i]->GetServiceName() || !"SFL: Service NULL name not allowed" );
                     pTable[i].lpServiceName = (LPTSTR)pMap[i]->GetServiceName();
-					pTable[i].lpServiceProc = pMap[i]->GetServiceMain();
+                    pTable[i].lpServiceProc = pMap[i]->GetServiceMain();
                     pMap[i]->SetServiceType( (m_nServiceCount > 1)? SERVICE_WIN32_SHARE_PROCESS : SERVICE_WIN32_OWN_PROCESS );
                 }
 
@@ -531,13 +531,13 @@ namespace SFL{ const T* SflGetServiceApp(void) { static T theApp; return &theApp
         SFL::CServiceRoot* pServiceMap[] = {                                \
 
 #define SFL_SERVICE_ENTRY( TService, idRes )                                \
-	SFL::CServiceProxyT< TService, idRes >::Construct( (TService*)NULL ),   \
+    SFL::CServiceProxyT< TService, idRes >::Construct( (TService*)NULL ),   \
 
 #define SFL_SERVICE_ENTRY2( TService, id, name )                            \
     SFL::CServiceProxyT< TService, id >::Construct2( (TService*)NULL, TEXT( name ) ), \
 
 #define SFL_END_SERVICE_MAP()                                               \
-			NULL                                                            \
+            NULL                                                            \
         };                                                                  \
         int retMain = -1;                                                   \
         if( pApp->PreMain( argc, argv ) )                                   \
@@ -549,7 +549,7 @@ namespace SFL{ const T* SflGetServiceApp(void) { static T theApp; return &theApp
 //////////// CONTROL HANDLING MAP ///////////////////////////////////////////
 //
 #define SFL_BEGIN_CONTROL_MAP(T)                                            \
-public:	                                                                    \
+public:                                                                     \
     enum { serviceStyle = SFL_NS SFL_SERVICESTYLE_NT4 };                    \
 protected:                                                                  \
     void Handler( DWORD dwControl )                                         \
@@ -599,7 +599,7 @@ typedef DWORD (T::*t_handler_range)(DWORD, DWORD&, DWORD&, BOOL&);          \
 //////////// EXTENDED CONTROL HANDLING MAP //////////////////////////////////
 //
 #define SFL_BEGIN_CONTROL_MAP_EX(T)                                         \
-public:	                                                                    \
+public:                                                                     \
     enum { serviceStyle = SFL_NS SFL_SERVICESTYLE_NT5 };                    \
 protected:                                                                  \
     DWORD HandlerEx( DWORD  dwControl,   DWORD  dwEventType,                \
@@ -615,7 +615,7 @@ typedef DWORD (T::*t_handler)(DWORD&, DWORD&, BOOL&);                       \
 typedef DWORD (T::*t_handler_range)(DWORD, DWORD&, DWORD&, BOOL&);          \
 typedef DWORD (T::*t_handler_ex)(DWORD&, DWORD&, DWORD&, BOOL&, DWORD, LPVOID, LPVOID); \
 typedef DWORD (T::*t_handler_range_ex)(DWORD, DWORD&, DWORD&, DWORD&, BOOL&, DWORD, LPVOID, LPVOID); \
-	    dwEventType; lpEventData; lpContext;  /* preventing 4100 */         \
+        dwEventType; lpEventData; lpContext;  /* preventing 4100 */         \
         do {                                                                \
 
 #define SFL_END_CONTROL_MAP_EX()                                            \
@@ -653,9 +653,9 @@ typedef DWORD (T::*t_handler_range_ex)(DWORD, DWORD&, DWORD&, DWORD&, BOOL&, DWO
 #define SFL_DECLARE_SIMPLESERVICEAPP_CLASS(TAppClass) class TAppClass: public CServiceAppT<TAppClass> {};
 
 namespace SFL {
-	typedef class _TSimpleApp: public CServiceAppT<_TSimpleApp> 
-	{
-	} CSimpleServiceApp;
+    typedef class _TSimpleApp: public CServiceAppT<_TSimpleApp>
+    {
+    } CSimpleServiceApp;
 }
 
 #endif // IV_SFLBASE_H

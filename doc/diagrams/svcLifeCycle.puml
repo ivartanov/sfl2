@@ -11,9 +11,9 @@ end note
 
 state ServiceMain {
 
-  [*] --> SetControls : SetControlsAccepted(dwControlsAccepted)
+  [*] --> SetControls : t_dwControlsAccepted
   SetControls --> SERVICE_START_PENDING
-  SERVICE_START_PENDING --> InitInstance: this->InitInstance*(arc, argv)
+  SERVICE_START_PENDING --> InitInstance: this->InitInstance(arc, argv)
   state InitInstance #gold
 }
 

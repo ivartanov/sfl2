@@ -140,7 +140,7 @@ In the second case unique service id and service name string are provided explic
 # Service life cycle
 
 > [!NOTE]
-> A bit simplified state diagram not showing pending states is below. Pleas refer to MSDN for full details about possible service states and transitions among those.
+> A bit simplified state diagram not showing pending states is below. Please refer to MSDN for full details about possible service states and transitions among those.
 
 ![](images/svcLifeCycle.svg)
 
